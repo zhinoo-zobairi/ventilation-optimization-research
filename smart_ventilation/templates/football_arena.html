@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klassenraum Fußball-Arena</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            padding: 20px;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1, h2 {
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #f472b6;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 400;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .button:hover {
+            background-color: #ec4899;
+        }
+        
+        .football-field {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            background: linear-gradient(90deg, #15803d 0%, #16a34a 50%, #15803d 100%);
+            border: 3px solid white;
+            border-radius: 10px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+        
+        .field-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .center-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: white;
+            transform: translateX(-50%);
+        }
+        
+        .center-circle {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 80px;
+            height: 80px;
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .goal-left, .goal-right {
+            position: absolute;
+            top: 40%;
+            width: 20px;
+            height: 20%;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid white;
+        }
+        
+        .goal-left {
+            left: -2px;
+            border-right: none;
+        }
+        
+        .goal-right {
+            right: -2px;
+            border-left: none;
+        }
+        
+        .team {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            border: 3px solid white;
+        }
+        
+        .team-a {
+            background: #dc2626;
+            left: 20%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .team-b {
+            background: #2563eb;
+            right: 20%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .team:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .scoreboard {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .team-info {
+            flex: 1;
+            margin: 0 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .score {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stats {
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+        
+        .winner {
+            animation: celebrate 2s infinite;
+        }
+        
+        @keyframes celebrate {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.2); }
+        }
+        
+        .match-status {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+        
+        .error-message {
+            color: #ff6b6b;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .football-field {
+                height: 300px;
+            }
+            
+            .team {
+                width: 50px;
+                height: 50px;
+                font-size: 10px;
+            }
+            
+            .scoreboard {
+                flex-direction: column;
+            }
+            
+            .team-info {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Klassenraum Fußball-Arena 🏆</h1>
+        <p>Die ultimative Schlacht zwischen den Klassenräumen!</p>
+        
+        <button class="button" onclick="window.location.href='/';">Zurück zur Hauptseite</button>
+        <button class="button" onclick="updateMatch();">Match Aktualisieren</button>
+        
+        {% if error %}
+        <div class="error-message">
+            <h2>Fehler beim Laden der Daten</h2>
+            <p>Die Klassenraum-Daten konnten nicht geladen werden. Bitte versuchen Sie es später erneut.</p>
+        </div>
+        {% else %}
+        
+        <div class="football-field" id="footballField">
+            <div class="field-lines">
+                <div class="center-line"></div>
+                <div class="center-circle"></div>
+                <div class="goal-left"></div>
+                <div class="goal-right"></div>
+            </div>
+            
+            <div class="team team-a" id="teamA" title="Klicken für Details">
+                10c
+            </div>
+            
+            <div class="team team-b" id="teamB" title="Klicken für Details">
+                9b
+            </div>
+        </div>
+        
+        <div class="scoreboard">
+            <div class="team-info">
+                <h3 id="teamAName">{{ classroom_data.team_a.name if classroom_data else 'Team A' }}</h3>
+                <div class="score" id="scoreA">{{ classroom_data.team_a.score if classroom_data else '0' }}</div>
+                <div class="stats">
+                    <div>🌡️ Temperatur: <span id="tempA">{{ classroom_data.team_a.temperature if classroom_data else 'N/A' }}°C</span></div>
+                    <div>💧 Luftfeuchtigkeit: <span id="humidityA">{{ classroom_data.team_a.humidity if classroom_data else 'N/A' }}%</span></div>
+                    <div>⚡ Energieverbrauch: <span id="energyA">{{ classroom_data.team_a.energy_usage if classroom_data else 'N/A' }}%</span></div>
+                </div>
+            </div>
+            
+            <div class="match-status" id="matchStatus">
+                VS
+            </div>
+            
+            <div class="team-info">
+                <h3 id="teamBName">{{ classroom_data.team_b.name if classroom_data else 'Team B' }}</h3>
+                <div class="score" id="scoreB">{{ classroom_data.team_b.score if classroom_data else '0' }}</div>
+                <div class="stats">
+                    <div>🌡️ Temperatur: <span id="tempB">{{ classroom_data.team_b.temperature if classroom_data else 'N/A' }}°C</span></div>
+                    <div>💧 Luftfeuchtigkeit: <span id="humidityB">{{ classroom_data.team_b.humidity if classroom_data else 'N/A' }}%</span></div>
+                    <div>⚡ Energieverbrauch: <span id="energyB">{{ classroom_data.team_b.energy_usage if classroom_data else 'N/A' }}%</span></div>
+                </div>
+            </div>
+        </div>
+        
+        {% endif %}
+        
+        <div style="margin-top: 20px;">
+            <h3>Bewertungskriterien:</h3>
+            <p>🌡️ <strong>Temperatur:</strong> Optimal 20-22°C (30 Punkte), Gut 18-24°C (20 Punkte)</p>
+            <p>💧 <strong>Luftfeuchtigkeit:</strong> Optimal 40-60% (30 Punkte), Gut 35-65% (20 Punkte)</p>
+            <p>⚡ <strong>Energieeffizienz:</strong> Sehr gut <80% (40 Punkte), Gut <90% (30 Punkte)</p>
+        </div>
+    </div>
+
+    <script>
+        let currentData = null;
+
+        function updateMatch() {
+            fetch('/api/football_data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Fehler:', data.error);
+                        return;
+                    }
+                    
+                    currentData = data;
+                    updateDisplay(data);
+                    animateTeams(data);
+                })
+                .catch(error => {
+                    console.error('Fehler beim Abrufen der Daten:', error);
+                });
+        }
+
+        function updateDisplay(data) {
+            // Update Team A
+            document.getElementById('teamAName').textContent = data.team_a.name;
+            document.getElementById('scoreA').textContent = data.team_a.score;
+            document.getElementById('tempA').textContent = data.team_a.temperature + '°C';
+            document.getElementById('humidityA').textContent = data.team_a.humidity + '%';
+            document.getElementById('energyA').textContent = data.team_a.energy_usage + '%';
+            
+            // Update Team B
+            document.getElementById('teamBName').textContent = data.team_b.name;
+            document.getElementById('scoreB').textContent = data.team_b.score;
+            document.getElementById('tempB').textContent = data.team_b.temperature + '°C';
+            document.getElementById('humidityB').textContent = data.team_b.humidity + '%';
+            document.getElementById('energyB').textContent = data.team_b.energy_usage + '%';
+            
+            // Update match status
+            const matchStatus = document.getElementById('matchStatus');
+            const teamA = document.getElementById('teamA');
+            const teamB = document.getElementById('teamB');
+            
+            // Remove existing winner classes
+            teamA.classList.remove('winner');
+            teamB.classList.remove('winner');
+            
+            if (data.team_a.score > data.team_b.score) {
+                matchStatus.textContent = `🏆 ${data.team_a.name} führt!`;
+                teamA.classList.add('winner');
+            } else if (data.team_b.score > data.team_a.score) {
+                matchStatus.textContent = `🏆 ${data.team_b.name} führt!`;
+                teamB.classList.add('winner');
+            } else {
+                matchStatus.textContent = '🤝 Unentschieden!';
+            }
+        }
+
+        function animateTeams(data) {
+            const teamA = document.getElementById('teamA');
+            const teamB = document.getElementById('teamB');
+            
+            // Position teams based on their scores (closer to goal if winning)
+            const scoreA = data.team_a.score;
+            const scoreB = data.team_b.score;
+            const totalScore = scoreA + scoreB;
+            
+            if (totalScore > 0) {
+                const teamAPosition = 15 + (scoreA / totalScore) * 15; // 15% to 30%
+                const teamBPosition = 15 + (scoreB / totalScore) * 15; // 15% to 30%
+                
+                teamA.style.left = teamAPosition + '%';
+                teamB.style.right = teamBPosition + '%';
+            }
+        }
+
+        // Auto-update every 30 seconds
+        setInterval(updateMatch, 30000);
+
+        // Initial load
+        {% if classroom_data %}
+        currentData = {{ classroom_data | tojson | safe }};
+        animateTeams(currentData);
+        {% endif %}
+
+        // Team click handlers for details
+        document.getElementById('teamA').addEventListener('click', function() {
+            if (currentData) {
+                alert(`${currentData.team_a.name}\nPunkte: ${currentData.team_a.score}\nTemperatur: ${currentData.team_a.temperature}°C\nLuftfeuchtigkeit: ${currentData.team_a.humidity}%\nEnergieverbrauch: ${currentData.team_a.energy_usage}%`);
+            }
+        });
+
+        document.getElementById('teamB').addEventListener('click', function() {
+            if (currentData) {
+                alert(`${currentData.team_b.name}\nPunkte: ${currentData.team_b.score}\nTemperatur: ${currentData.team_b.temperature}°C\nLuftfeuchtigkeit: ${currentData.team_b.humidity}%\nEnergieverbrauch: ${currentData.team_b.energy_usage}%`);
+            }
+        });
+    </script>
+</body>
+</html>
